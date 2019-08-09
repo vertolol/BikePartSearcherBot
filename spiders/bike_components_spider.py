@@ -1,5 +1,5 @@
-from category_codes.bike_components_category_codes import bike_components_category_codes
-from baseSpider import AbstractSpider
+from .category_codes.bike_components_category_codes import bike_components_category_codes
+from .baseSpider import AbstractSpider
 
 
 class BikeComponentsSpider(AbstractSpider):

@@ -1,8 +1,8 @@
 from telegram_objects.telegram_objects import (SendMessageText, SendMessageReplyMarkup,
                                                EditMessageText, SendChatAction,  ReplyMarkup, Button)
-from stores import stores_for_select, selected, not_selected
+from .stores import stores_for_select, selected, not_selected
 from spiders import starting_spiders
-import category_tree
+from .category_tree import all_categories as category_tree
 
 
 session = {}

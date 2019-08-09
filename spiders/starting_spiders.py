@@ -1,6 +1,6 @@
-from bike24_spider import Bike24Spider
-from bike_components_spider import BikeComponentsSpider
-from bike_discount_spider import BikeDiscountSpider
+from .bike24_spider import Bike24Spider
+from .bike_components_spider import BikeComponentsSpider
+from .bike_discount_spider import BikeDiscountSpider
 
 
 spiders = {
