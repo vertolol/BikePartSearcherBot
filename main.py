@@ -33,4 +33,7 @@ def get_handler(message):
 
 
 if __name__ == '__main__':
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
     app.run()
