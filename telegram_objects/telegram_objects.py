@@ -1,95 +1,103 @@
 import requests
 from settings import URL, proxies
+from abc import ABC
 
 
-class Message:
-    def __init__(self, text='', chat_id=None, mes_id=None):
-        self.text = text
-        self.chat_id = chat_id
-        self.mes_id = mes_id
-
-
-class IncomingData:
+class IncomingMessage:
     def __init__(self, data):
         self.data = data
 
     def get_message_object(self):
         if self.data.get('callback_query'):
-            return KeyboardMessage(self.data)
+            return IncomingReplyMarkup(self.data)
         else:
-            return TextMessage(self.data)
+            return IncomingText(self.data)
 
 
-class TextMessage(Message):
-    def __init__(self, data, *args, **kwargs):
-        super().__init__(data, *args, **kwargs)
+class IncomingText:
+    def __init__(self, data):
         self.data = data
-
-        self.text = self.data['message']['text']
         self.chat_id = self.data['message']['chat']['id']
         self.mes_id = self.data['message']['message_id']
-
+        self.text = self.data['message']['text']
         self.is_keyboard = False
 
 
-class KeyboardMessage(Message):
-    def __init__(self, data, *args, **kwargs):
-        super().__init__(data, *args, **kwargs)
+class IncomingReplyMarkup:
+    def __init__(self, data):
         self.data = data['callback_query']
-
-        self.text = self.data['data']
         self.chat_id = self.data['message']['chat']['id']
         self.mes_id = self.data['message']['message_id']
-
+        self.text = self.data['data']
         self.is_keyboard = True
         self.keyboard = self.data['message']['reply_markup']
 
 
-class ForSendMessage(Message):
-    def __init__(self, keyboard=None, parse_mode='HTML', method='sendMessage', *args, **kwargs):
-        super(ForSendMessage, self).__init__(*args, **kwargs)
-        self.keyboard = keyboard
-        self.parse_mode = parse_mode
-        self.method = method
-        self.url = URL + self.method
+class ForSendMessage(ABC):
+    method = 'sendMessage'
 
-    @property
-    def answer(self):
-        a = {'text': self.text,
-             'chat_id': self.chat_id,
-             'message_id': self.mes_id,
-             'parse_mode': self.parse_mode,
-             'disable_web_page_preview': 'true'
-             }
-        if self.keyboard is not None:
-            a.update({'reply_markup' : self.keyboard})
-        return a
+    def __init__(self, chat_id=None, mes_id=None, text=None, parse_mode='HTML', *args, **kwargs):
+        self.chat_id = chat_id
+        self.mes_id = mes_id
+        self.text = text
+        self.parse_mode = parse_mode
+        self.answer = {'chat_id': self.chat_id,
+                       'message_id': self.mes_id,
+                       'text': self.text,
+                       'parse_mode': self.parse_mode,
+                       'disable_web_page_preview': 'true'}
 
     def send_message(self):
-        requests.post(self.url, json=self.answer, proxies=proxies)
+        url = URL + self.method
+        requests.post(url, json=self.answer, proxies=proxies)
 
 
-class Keyboard():
+class SendMessageText(ForSendMessage):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class SendMessageReplyMarkup(ForSendMessage):
+    def __init__(self, reply_markup, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.reply_markup = reply_markup
+        self.answer.update({'reply_markup': self.reply_markup})
+
+
+class EditMessageText(ForSendMessage):
+    method = 'editMessageText'
+
+    def __init__(self, reply_markup=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.reply_markup = reply_markup
+        if self.reply_markup:
+            self.answer.update({'reply_markup': self.reply_markup})
+
+
+class SendChatAction(ForSendMessage):
+    method = 'sendChatAction'
+
+    def __init__(self, action='typing', *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.action = action
+        self.answer = {'chat_id': self.chat_id,
+                       'action': self.action}
+
+
+class ReplyMarkup:
     def __init__(self, buttons):
         self.buttons = buttons
 
-    def keyboard(self, columns=1, type_keyboard='inline_keyboard'):
-        self._buttons_list = []
-
+    def keyboard(self, columns=2, type_keyboard='inline_keyboard'):
+        buttons_list = []
         for index in range(0, len(self.buttons), columns):
-            row = self.buttons[index:index+columns]
-            self._buttons_list.append(row)
-
-        self.keyboard = { type_keyboard : self._buttons_list }
-
-        return self.keyboard
+            row = self.buttons[index:index + columns]
+            buttons_list.append(row)
+        return {type_keyboard: buttons_list}
 
 
-class Button():
-    def __init__(self, text, callback_data, url=None):
+class Button:
+    def __init__(self, text, callback_data):
         self.text = text
         self.callback_data = callback_data
-        self.url = url
         self.button = {'text': self.text, 'callback_data': self.callback_data}
-        if url:
-            self.button.update({'url':self.url})

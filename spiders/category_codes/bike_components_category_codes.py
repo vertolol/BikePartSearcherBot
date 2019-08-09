@@ -1,5 +1,5 @@
 bike_components_category_codes = {
-    'mtb_disc_brakes': {'code': '60090189', 'additional_string': None},
+    'mtb_disc_brakes': {'code': '60090189', 'additional_string': 'disc brake set'},
     'mtb_disc_brake_pads': {'code': '60090188', 'additional_string': None},
     'mtb_rim_brakes': {'code': '60090080', 'additional_string': None},
     'mtb_rim_brake_pads': {'code': '60090079', 'additional_string': None},

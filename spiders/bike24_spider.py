@@ -1,6 +1,6 @@
 from category_codes.bike24_category_codes import bike24_category_codes
 from bs4 import BeautifulSoup
-from .baseSpider import AbstractSpider
+from baseSpider import AbstractSpider
 
 
 class Bike24Spider(AbstractSpider):
@@ -22,10 +22,9 @@ class Bike24Spider(AbstractSpider):
         name = item.find(class_='text-title h4').a['title']
         price_string = item.find(class_='text-price').text
         price = self.price_to_float(price_string)
-        url = item.find(class_='text-title h4').a['href']
-        cell = {name: [price, url]}
+        link = item.find(class_='text-title h4').a['href']
+        cell = {name: {'price': price, 'link': link}}
         return cell
 
     def price_to_float(self, price_string):
         return float(price_string.split('€')[-1][:-1].replace(',', '.'))
-

@@ -1,4 +1,4 @@
-bike_type = {
+category_for_select = {
     'Горный': 'mtb',
     'Шоссейный': 'road'
 }
@@ -34,4 +34,13 @@ mtb_rear_derailleurs = {
     '10 скоростей': 'mtb_10_speed',
     '11 скоростей': 'mtb_11_speed',
     '12 скоростей': 'mtb_12_speed'
+}
+
+
+all_categories = {
+    'mtb': mtb,
+    'mtb_brakes': mtb_brakes,
+    'mtb_forks': mtb_forks,
+    'mtb_wheels': mtb_wheels,
+    'mtb_rear_derailleurs': mtb_rear_derailleurs
 }

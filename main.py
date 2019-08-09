@@ -1,6 +1,6 @@
 from flask import Flask, request
-from handlers.handlers import *
-from telegram_objects.telegram_objects import IncomingData
+from handlers.handlers import handlers_dict, session
+from telegram_objects.telegram_objects import IncomingMessage
 
 app = Flask(__name__)
 
@@ -8,7 +8,7 @@ app = Flask(__name__)
 @app.route('/', methods=['POST'])
 def index():
     incoming = request.get_json()
-    message = IncomingData(incoming).get_message_object()
+    message = IncomingMessage(incoming).get_message_object()
     handler = get_handler(message)
     for_send = handler(message)
     for_send.send_message()
@@ -16,30 +16,18 @@ def index():
     return 'Ok'
 
 
-handlers = {
-    '/help': bot_help,
-    '/start': bot_start,
-    'stores_selection': stores_selection,
-    'category_selection': category_selection,
-    'get_result': get_result,
-    'selection_error': selection_error
-}
-
-
 def get_handler(message):
     if message.chat_id in session:
-
         if message.is_keyboard:
-            handler = handlers[session[message.chat_id]['handler']]
+            handler = handlers_dict[session[message.chat_id]['handler']]
         elif session[message.chat_id]['handler'] == 'get_result':
-            handler = handlers['get_result']
+            handler = handlers_dict['get_result']
         else:
-            handler = handlers['selection_error']
-
+            handler = handlers_dict['selection_error']
     elif message.text == '/start':
-        handler = handlers['/start']
+        handler = handlers_dict['/start']
     else:
-        handler = handlers['/help']
+        handler = handlers_dict['/help']
 
     return handler
 

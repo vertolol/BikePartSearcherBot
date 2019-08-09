@@ -1,6 +1,6 @@
 from category_codes.bike_discount_category_codes import bike_discount_category_codes
 from bs4 import BeautifulSoup
-from .baseSpider import AbstractSpider
+from baseSpider import AbstractSpider
 
 
 class BikeDiscountSpider(AbstractSpider):
@@ -21,9 +21,10 @@ class BikeDiscountSpider(AbstractSpider):
         name = ' '.join(item.find(class_='product-description').text.split())
         price_string = item.find(class_='price-value').text
         price = self.price_to_float(price_string)
-        url = item.find(class_='productimage').a['href']
-        cell = {name: [price, url]}
+        link = item.find(class_='productimage').a['href']
+        cell = {name: {'price': price, 'link': link}}
         return cell
 
     def price_to_float(self, price_string):
-        return float(price_string.split()[0].replace(',', '.'))
+        return float(price_string.split()[0].replace('-', '0').replace(',', '.'))
+

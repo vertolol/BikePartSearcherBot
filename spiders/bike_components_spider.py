@@ -1,5 +1,5 @@
 from category_codes.bike_components_category_codes import bike_components_category_codes
-from .baseSpider import AbstractSpider
+from baseSpider import AbstractSpider
 
 
 class BikeComponentsSpider(AbstractSpider):
@@ -19,11 +19,8 @@ class BikeComponentsSpider(AbstractSpider):
         price_string = item['price']
         price = self.price_to_float(price_string)
         link = 'https://www.bike-components.de' + item['link']
-        cell = {name: [price, link]}
+        cell = {name: {'price': price, 'link': link}}
         return cell
 
     def price_to_float(self, price_string):
-        return float(price_string[:-1])
-
-# s = BikeComponentsSpider('mtb_disc_brakes', 'trp slate')
-# print(*s.run(), sep='\n')
+        return float(price_string.split()[-1][:-1])

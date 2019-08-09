@@ -1,6 +1,5 @@
 import unittest
 import bike24 as crawler
-from category_codes.bike24_category_codes import bike24_category_codes as codes
 
 
 class TestGetUrlForCrawler(unittest.TestCase):

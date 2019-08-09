@@ -14,10 +14,15 @@ class AbstractSpider(ABC):
             self.item_name = item_name + ' ' + self.CATEGORY_CODES[category]['additional_string']
 
     def get_html(self):
-        return requests.get(self.url).text
+        response = requests.get(self.url)
+        if response.status_code == 200:
+            return  response.text
 
     def get_json(self):
-        return requests.get(self.url).json()
+        response = requests.get(self.url)
+        if response.status_code == 200:
+            if response.headers['Content-Type'] == 'application/json':
+                return response.json()
 
     @property
     def url(self):
@@ -35,7 +40,7 @@ class AbstractSpider(ABC):
     def price_to_float(self, price_string):
         pass
 
-    def item_name_verification(self, cell):
+    def name_matches_result(self, cell):
         words_in_item_name = self.item_name.lower().split()
         words_in_result_name = list(cell.keys())[0].lower().split()
         if all(word in words_in_result_name for word in words_in_item_name):
@@ -46,12 +51,11 @@ class AbstractSpider(ABC):
         result_list = []
         for item in self.get_list_items():
             cell = self.scrape_data(item)
-            if self.item_name_verification(cell) is not None:
+            if self.name_matches_result(cell):
                 result_list.append(cell)
 
-        result_list.sort(key=lambda x: list(x.values())[0][0])
+        result_list.sort(key=lambda x: list(x.values())[0]['price'])
         return result_list[:self.SIZE]
 
 
-# s = BikeComponentsSpider('mtb_27_wheels', 'DT SWISS E 1900 SPLINE')
-# print(*s.run(), sep='\n')
+
