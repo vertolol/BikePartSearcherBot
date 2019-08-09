@@ -1,6 +1,6 @@
-from category_codes.bike_discount_category_codes import bike_discount_category_codes
+from .category_codes.bike_discount_category_codes import bike_discount_category_codes
 from bs4 import BeautifulSoup
-from baseSpider import AbstractSpider
+from .baseSpider import AbstractSpider
 
 
 class BikeDiscountSpider(AbstractSpider):

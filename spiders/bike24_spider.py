@@ -1,6 +1,6 @@
-from category_codes.bike24_category_codes import bike24_category_codes
+from .category_codes.bike24_category_codes import bike24_category_codes
 from bs4 import BeautifulSoup
-from baseSpider import AbstractSpider
+from .baseSpider import AbstractSpider
 
 
 class Bike24Spider(AbstractSpider):
